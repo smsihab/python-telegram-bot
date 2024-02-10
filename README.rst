@@ -1,4 +1,44 @@
-..
+TOKEN = '6921694168:AAFmeKKzrVB1SHjCa-VVjom9L7k-8p3lzwA'
+def download_video(url):
+response = requests.get(url)
+# Extract the video URL from the response content or headers
+video_url = ...
+if video_url:
+    video_data = requests.get(video_url).content
+    # Save the video file with a unique name
+    filename = 'video.mp4'
+    with open(filename, 'wb') as file:
+        file.write(video_data)
+    return filename
+else:
+    return None
+def handle_message(update, context):
+message = update.message
+if message.text.startswith('/start'):
+    response_text = 'Welcome to the Facebook video downloader bot! Send me the Facebook video link.'
+elif message.text.startswith('https://www.facebook.com/'):
+    video_url = message.text
+    filename = download_video(video_url)
+    if filename:
+        # Respond with the downloaded video
+        context.bot.send_video(chat_id=message.chat_id, video=open(filename, 'rb'))
+    else:
+        response_text = 'Unable to download the video. Please make sure the URL is correct.'
+else:
+    response_text = 'Invalid command. Please send a valid Facebook video link.'
+
+if response_text:
+    context.bot.send_message(chat_id=message.chat_id, text=response_text)
+def main():
+updater = Updater(TOKEN, use_context=True)
+dispatcher = updater.dispatcher
+handler = MessageHandler(Filters.text & (~Filters.command), handle_message)
+dispatcher.add_handler(handler)
+updater.start_polling()
+updater.idle()
+if name == 'main':
+main()
+```..
     Make sure to apply any changes to this file to README_RAW.rst as well!
 
 .. image:: https://raw.githubusercontent.com/python-telegram-bot/logos/master/logo-text/png/ptb-logo-text_768.png
